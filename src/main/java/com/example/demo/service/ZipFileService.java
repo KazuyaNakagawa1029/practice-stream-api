@@ -12,7 +12,6 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,54 +23,41 @@ import java.util.zip.ZipOutputStream;
 @Service
 public class ZipFileService {
 
-    public void createZipFIle() {
-        // 文字コード
-        Charset charset = Charset.forName("MS932");
-        // 入力ファイル
-        Path path1 = Paths.get("C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\file\\dummy.txt");
-        // 出力ファイル
-        String outfile1 = "C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\zip\\zipテスト.zip";
+    public void createZipFIle()  throws IOException{
+        byte[] readData = new byte[1];
+        String fileName ="C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\file\\dummy.txt";
+        BufferedInputStream  bis = new BufferedInputStream (new FileInputStream(fileName));
+        String zipName =  "C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\zip\\zipテスト.zip";
+        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream( new File(zipName)));
+        zos.putNextEntry(new ZipEntry(("dummy2.txt")));
+        BufferedOutputStream bos = new BufferedOutputStream(zos);
 
-        try (
-                FileOutputStream fos = new FileOutputStream(outfile1);
-                BufferedOutputStream bos = new BufferedOutputStream(fos);
-                ZipOutputStream zos = new ZipOutputStream(bos, charset);
-        ) {
-            // zipの中のファイル1
-            byte[] data1 = Files.readAllBytes(path1);
-            ZipEntry zip1 = new ZipEntry("zipその1.txt");
-            zos.putNextEntry(zip1);
-            zos.write(data1);
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        int data;
+        while ((data = bis.read(readData)) != -1) {
+            bos.write((byte) data);
         }
+        bis.close();
+        bos.close();
     }
 
+
     public void deforestZipFIle() {
-        // 文字コード
-        Charset charset = Charset.forName("MS932");
-        // 入力ファイル
-        String inputfile1 = "C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\zip\\zipテスト.zip";
-        // 出力先
-        String outputfile1 = "C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\file\\";
+        File zipFile = new File("C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\zip\\zipテスト.zip");
+        String outputfile = "C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\file\\";
         try (
-                FileInputStream fis = new FileInputStream(inputfile1);
-                BufferedInputStream bis = new BufferedInputStream(fis);
-                ZipInputStream zis = new ZipInputStream(bis, charset);
+                FileInputStream fis = new FileInputStream(zipFile);
+                ZipInputStream zis = new ZipInputStream(fis);
         ) {
             ZipEntry zipentry;
-            // zipの中のファイルがあるだけ繰り返す
-            // 展開後のファイルサイズ、ファイル名に注意
             while ((zipentry = zis.getNextEntry()) != null) {
-                try (FileOutputStream fos = new FileOutputStream(outputfile1 + zipentry.getName());
+                try (FileOutputStream fos = new FileOutputStream(outputfile + zipentry.getName());
                      BufferedOutputStream bos = new BufferedOutputStream(fos);
+                     BufferedInputStream bis =new BufferedInputStream(zis);
                 ) {
-                    byte[] data = new byte[1024]; // 1KB 調整可
-                    int count = 0;
-                    while ((count = zis.read(data)) != -1) {
-                        bos.write(data, 0, count);
+                    byte[] readData = new byte[1];
+                    int data;
+                    while ((data = bis.read(readData)) != -1) {
+                        bos.write((byte) data);
                     }
                 }
             }
