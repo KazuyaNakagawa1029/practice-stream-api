@@ -9,9 +9,9 @@ public class DemoApplication {
 
 	public static void main(String[] args) throws Exception {
 
-		String fileName = "karui.txt";
+		String fileName = "dummy.txt";
 		String folderName = "C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\file\\";
-		String zipName =  "C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\zip\\zipテスト2.zip";
+		String zipName =  "C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\zip\\zipテスト.zip";
 
 		ZipFileService zipFileService = new ZipFileService();
 		zipFileService.doZipFIle(folderName,fileName,zipName,0);
