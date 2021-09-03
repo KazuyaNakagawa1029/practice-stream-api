@@ -23,36 +23,30 @@ import java.util.zip.ZipOutputStream;
 @Service
 public class ZipFileService {
 
-    public void createZipFIle()  throws IOException{
-        byte[] readData = new byte[1];
-        String fileName ="C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\file\\dummy.txt";
-        BufferedInputStream  bis = new BufferedInputStream (new FileInputStream(fileName));
-        String zipName =  "C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\zip\\zipテスト.zip";
-        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream( new File(zipName)));
-        zos.putNextEntry(new ZipEntry(("dummy2.txt")));
-        BufferedOutputStream bos = new BufferedOutputStream(zos);
+    public void doZipFIle(String folderName ,String fileName ,String zipName, int pattern)  throws IOException{
 
-        int data;
-        while ((data = bis.read(readData)) != -1) {
-            bos.write((byte) data);
-        }
-        bis.close();
-        bos.close();
-    }
+        if(pattern ==0){
+            byte[] readData = new byte[1];
+            BufferedInputStream  bis = new BufferedInputStream (new FileInputStream(folderName + fileName));
+            ZipOutputStream zos = new ZipOutputStream(new FileOutputStream( new File(zipName)));
+            zos.putNextEntry(new ZipEntry((fileName)));
+            BufferedOutputStream bos = new BufferedOutputStream(zos);
 
+            int data;
+            while ((data = bis.read(readData)) != -1) {
+                bos.write((byte) data);
+            }
 
-    public void deforestZipFIle() {
-        File zipFile = new File("C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\zip\\zipテスト.zip");
-        String outputfile = "C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\file\\";
-        try (
-                FileInputStream fis = new FileInputStream(zipFile);
-                ZipInputStream zis = new ZipInputStream(fis);
-        ) {
+        }else if(pattern == 1) {
+
+            FileInputStream fis = new FileInputStream(zipName);
+            ZipInputStream zis = new ZipInputStream(fis);
+
             ZipEntry zipentry;
             while ((zipentry = zis.getNextEntry()) != null) {
-                try (FileOutputStream fos = new FileOutputStream(outputfile + zipentry.getName());
+                try (FileOutputStream fos = new FileOutputStream(zipentry.getName());
                      BufferedOutputStream bos = new BufferedOutputStream(fos);
-                     BufferedInputStream bis =new BufferedInputStream(zis);
+                     BufferedInputStream bis = new BufferedInputStream(zis);
                 ) {
                     byte[] readData = new byte[1];
                     int data;
@@ -60,11 +54,11 @@ public class ZipFileService {
                         bos.write((byte) data);
                     }
                 }
+                return;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
+
 
     public void createTarGzFile() throws Exception {
         Path dir = Paths.get("C:\\Users\\NakagawaKazuya\\IdeaProjects\\practice-stream-api\\src\\main\\resources\\file\\dummy.txt");
